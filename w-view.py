@@ -7,6 +7,9 @@ class ProcessMonitor:
         self.root = root
         self.root.title("Wulf-Term")
 
+        # Configure a dark theme
+        self.root.tk_setPalette(background='#333', foreground='white', activeBackground='#666', activeForeground='white')
+
         # Add a search entry
         self.search_entry = tk.Entry(self.root, width=20)
         self.search_entry.pack(pady=10)
@@ -28,6 +31,10 @@ class ProcessMonitor:
         self.tree.column("cpu", width=80)
         self.tree.column("memory", width=80)
 
+        # Add a button to kill the selected process
+        self.kill_button = tk.Button(self.root, text="Kill Selected Process", command=self.kill_selected_process)
+        self.kill_button.pack()
+
         # Set up auto-refresh
         self.auto_refresh()
 
@@ -47,10 +54,27 @@ class ProcessMonitor:
                 ))
 
     def auto_refresh(self):
-        # Implement your auto-refresh logic here
         # For demonstration purposes, we'll simply refresh every 5 seconds
         self.search_processes()
         self.root.after(5000, self.auto_refresh)
+
+    def kill_selected_process(self):
+        # Get the selected item in the treeview
+        selected_item = self.tree.selection()
+        
+        if selected_item:
+            # Get the process ID from the selected item
+            pid = self.tree.item(selected_item, "values")[0]
+
+            # Attempt to terminate the process
+            try:
+                process = psutil.Process(pid)
+                process.terminate()
+                self.search_processes()  # Refresh the list after terminating the process
+            except psutil.NoSuchProcess:
+                print(f"Process with PID {pid} not found.")
+            except psutil.AccessDenied:
+                print(f"Access denied to terminate process with PID {pid}.")
 
 if __name__ == "__main__":
     root = tk.Tk()
