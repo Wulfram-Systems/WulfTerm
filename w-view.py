@@ -58,9 +58,16 @@ class ProcessMonitor:
         # Sort processes based on CPU usage
         processes.sort(key=lambda x: float(x[2]), reverse=True)
 
-        # Insert sorted processes into the treeview
+        # Configure tag colors
+        self.tree.tag_configure("red", background="red")
+        self.tree.tag_configure("yellow", background="yellow")
+        self.tree.tag_configure("green", background="green")
+
+        # Insert sorted processes into the treeview with color coding
         for process in processes:
-            self.tree.insert("", "end", values=process)
+            cpu_percent = float(process[2])
+            color = self.get_color(cpu_percent)
+            self.tree.insert("", "end", values=process, tags=(color,))
 
     def auto_refresh(self):
         # Refresh every second
@@ -91,7 +98,16 @@ class ProcessMonitor:
         for index, (val, k) in enumerate(items):
             self.tree.move(k, '', index)
 
+    def get_color(self, cpu_percent):
+        if cpu_percent > 75:
+            return "red"
+        elif cpu_percent > 50:
+            return "yellow"
+        else:
+            return "green"
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = ProcessMonitor(root)
     root.mainloop()
+
