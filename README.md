@@ -1,3 +1,7 @@
+
+![Screenshot_20231128_225435](https://github.com/Wulfram-Systems/WulfTerm/assets/61376048/8206e2b4-862b-47f5-bb1f-a1e028bba9f7)
+
+
 #Wulf-Term: Homemade Task Manager
 
 "ChatGPT Generated Bullshit"
