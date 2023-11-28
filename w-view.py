@@ -19,9 +19,9 @@ class ProcessMonitor:
         # Set up the treeview
         self.tree = ttk.Treeview(self.root, columns=("pid", "name", "cpu", "memory"))
         self.tree.heading("pid", text="PID")
-        self.tree.heading("name", text="Name")
-        self.tree.heading("cpu", text="CPU %")
-        self.tree.heading("memory", text="Memory %")
+        self.tree.heading("name", text="Name", command=lambda: self.sort_column("name"))
+        self.tree.heading("cpu", text="CPU %", command=lambda: self.sort_column("cpu"))
+        self.tree.heading("memory", text="Memory %", command=lambda: self.sort_column("memory"))
 
         self.tree.pack(expand=True, fill=tk.BOTH)
 
@@ -44,19 +44,28 @@ class ProcessMonitor:
             self.tree.delete(item)
 
         search_term = self.search_entry.get().lower()
+        processes = []
+
         for process in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
             if search_term in process.info['name'].lower():
-                self.tree.insert("", "end", values=(
+                processes.append((
                     process.info['pid'],
                     process.info['name'],
                     f"{process.info['cpu_percent']:.2f}",
                     f"{process.info['memory_percent']:.2f}"
                 ))
 
+        # Sort processes based on CPU usage
+        processes.sort(key=lambda x: float(x[2]), reverse=True)
+
+        # Insert sorted processes into the treeview
+        for process in processes:
+            self.tree.insert("", "end", values=process)
+
     def auto_refresh(self):
-        # For demonstration purposes, we'll simply refresh every 5 seconds
+        # Refresh every second
         self.search_processes()
-        self.root.after(5000, self.auto_refresh)
+        self.root.after(1000, self.auto_refresh)
 
     def kill_selected_process(self):
         # Get the selected item in the treeview
@@ -75,6 +84,12 @@ class ProcessMonitor:
                 print(f"Process with PID {pid} not found.")
             except psutil.AccessDenied:
                 print(f"Access denied to terminate process with PID {pid}.")
+
+    def sort_column(self, col):
+        items = [(self.tree.set(k, col), k) for k in self.tree.get_children('')]
+        items.sort(reverse=True)
+        for index, (val, k) in enumerate(items):
+            self.tree.move(k, '', index)
 
 if __name__ == "__main__":
     root = tk.Tk()
