@@ -1,5 +1,6 @@
 #Wulf-Term: Homemade Task Manager
 
+"ChatGPT Generated Bullshit"
 Overview:
 Wulf-Term is a homemade task manager built using Python and Tkinter. This graphical application allows users to monitor and manage running processes on their system in a user-friendly manner. It provides real-time information about CPU usage, memory usage, and process details.
 
