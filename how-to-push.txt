@@ -1,0 +1,11 @@
+# Check the status
+git status
+
+# Stage the changes
+git add example.txt
+
+# Commit the changes with a message
+git commit -m "Add example.txt"
+
+# Push changes to GitHub
+git push origin main
